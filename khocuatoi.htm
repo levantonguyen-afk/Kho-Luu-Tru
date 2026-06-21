@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kho Lưu Trữ Cá Nhân</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-header: rgba(255, 255, 255, 0.85);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.12);
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --danger: #e53e3e;
+            --success: #48bb78;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --footer-bg: rgba(255, 255, 255, 0.6);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d27;
+            --bg-card: #242836;
+            --bg-header: rgba(26, 29, 39, 0.9);
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border-color: #2d3748;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.4);
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --footer-bg: rgba(26, 29, 39, 0.8);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem 1rem 1rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes copySuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .animate-in-delay-1 { animation-delay: 0.1s; }
+        .animate-in-delay-2 { animation-delay: 0.2s; }
+        .animate-in-delay-3 { animation-delay: 0.3s; }
+
+        /* ===== HEADER ===== */
+        header {
+            background: var(--bg-header);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            animation: slideIn 0.4s ease;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .logo h1 i {
+            color: var(--accent);
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        .logo p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.4rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg);
+            border-color: var(--accent);
+        }
+
+        .theme-toggle i {
+            font-size: 1.1rem;
+        }
+
+        /* ===== USER SECTION ===== */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-login, .btn-register {
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-login:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-register {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info .user-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .user-info .user-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--accent);
+            width: 40px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover i {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .stat-card .info h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-card .info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===== UPLOAD ===== */
+        .upload-area {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2.5rem;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .upload-area .left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .upload-area .left i {
+            font-size: 2.2rem;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .upload-area:hover .left i {
+            transform: rotate(20deg) scale(1.1);
+        }
+
+        .upload-area .left p {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .upload-area .left small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn-upload {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-upload:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-upload i {
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .btn-upload:hover i {
+            transform: rotate(90deg);
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+            gap: 1rem;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .toolbar .search-box {
+            background: var(--bg-card);
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            flex: 1 1 240px;
+            transition: var(--transition);
+        }
+
+        .toolbar .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .toolbar .search-box i {
+            color: var(--text-muted);
+            margin-right: 10px;
+        }
+
+        .toolbar .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 0.4rem 0;
+            font-size: 0.95rem;
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .toolbar .filter-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar .filter-btns button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            cursor: pointer;
+            background: var(--bg-card);
+        }
+
+        .toolbar .filter-btns button:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toolbar .filter-btns button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* ===== FILE GRID ===== */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .file-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem 1rem 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .file-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .file-card .icon {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .file-card:hover .icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .file-card .icon img {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .file-card:hover .icon img {
+            transform: scale(1.05);
+        }
+
+        .file-card .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .file-card .file-size {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin: 4px 0 10px;
+        }
+
+        .file-card .file-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin: 6px 0 10px;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .file-card .file-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .file-card .file-link i {
+            font-size: 0.8rem;
+        }
+
+        .file-card .actions {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .file-card .actions a,
+        .file-card .actions button {
+            background: var(--bg-primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .file-card .actions a:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .file-card .actions .copy-btn {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--accent);
+        }
+
+        .file-card .actions .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .file-card .actions .copy-btn.copied {
+            background: var(--success);
+            color: white;
+            animation: copySuccess 0.3s ease;
+        }
+
+        .file-card .actions .delete-btn {
+            color: var(--danger);
+            background: rgba(229, 62, 62, 0.1);
+        }
+
+        .file-card .actions .delete-btn:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .file-card .file-id {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            opacity: 0.3;
+            font-family: monospace;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--border-color);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .empty-state:hover i {
+            transform: scale(1.1) rotate(10deg);
+            color: var(--accent);
+        }
+
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideIn 0.3s ease;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal .close-btn:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .modal h2 {
+            font-size: 1.6rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p.sub {
+            color: var(--text-muted);
+            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
+        }
+
+        .modal .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .modal .form-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .modal .form-group input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .modal .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            transform: scale(1.01);
+        }
+
+        .modal .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+        }
+
+        .modal .btn-submit:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .modal .switch-auth {
+            text-align: center;
+            margin-top: 1.2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .modal .switch-auth a {
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .modal .switch-auth a:hover {
+            text-decoration: underline;
+            color: var(--accent-hover);
+        }
+
+        .modal .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 1.2rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .modal .divider::before,
+        .modal .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .modal .google-btn {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .modal .google-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        .modal .google-btn img {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            pointer-events: none;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.info i { color: var(--accent); }
+
+        /* ============================================================
+           FOOTER - THÔNG TIN NGƯỜI SỞ HỮU
+           ============================================================ */
+        .main-footer {
+            margin-top: 3rem;
+            padding: 1.5rem 2rem;
+            background: var(--footer-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            animation: fadeInUp 0.5s ease forwards;
+            width: 100%;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .footer-owner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .footer-owner .owner-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: float 3s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .footer-owner .owner-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .footer-owner .owner-avatar:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .footer-owner .owner-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-owner .owner-info .owner-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .footer-owner .owner-info .owner-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-owner .owner-info .owner-name .badge-owner {
+            font-size: 0.6rem;
+            background: var(--accent);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-owner .owner-info .owner-email {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer-owner .owner-info .owner-email i {
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        .footer-owner .owner-info .owner-email .copy-email-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: var(--transition);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .footer-owner .owner-info .owner-email .copy-email-btn:hover {
+            background: var(--bg-primary);
+            color: var(--accent);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-right .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-right .footer-social a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-right .footer-social a:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .footer-right .footer-version {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+            padding: 4px 12px;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .footer-divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border-color);
+            margin: 1rem 0 0.8rem;
+            opacity: 0.5;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .footer-bottom .copyright {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .footer-bottom .copyright i {
+            color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer-bottom .footer-links {
+            display: flex;
+            gap: 16px;
+            font-size: 0.75rem;
+        }
+
+        .footer-bottom .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+
+        .footer-bottom .footer-links a:hover {
+            color: var(--accent);
+            opacity: 1;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            body { padding: 1rem 0.8rem 0.8rem; }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 1.2rem;
+            }
+            .user-section {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            .auth-buttons {
+                flex-wrap: wrap;
+            }
+            .upload-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .upload-area .left {
+                justify-content: center;
+            }
+            .btn-upload {
+                justify-content: center;
+                width: 100%;
+            }
+            .file-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 1rem;
+            }
+            .modal {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar .filter-btns {
+                justify-content: center;
+            }
+            .toast {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+            }
+            .file-card .actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            /* Footer responsive */
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .footer-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.8rem;
+            }
+            .footer-owner .owner-info .owner-name {
+                font-size: 0.95rem;
+                flex-wrap: wrap;
+            }
+            .main-footer {
+                padding: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 { font-size: 1.3rem; }
+            .stat-card { padding: 1rem; }
+            .stat-card i { font-size: 1.5rem; width: 30px; }
+            .file-card { padding: 1rem; }
+            .file-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .footer-owner {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            .footer-right {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .footer-right .footer-social {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-cloud-upload-alt"></i> Kho Của Tôi</h1>
+            <p><i class="far fa-user-circle"></i> Trang cá nhân · Lưu trữ an toàn</p>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" id="themeToggle" title="Chuyển đổi theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeText">Tối</span>
+            </button>
+
+            <!-- User Section -->
+            <div class="user-section" id="userSection"></div>
+        </div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-card animate-in">
+            <i class="fas fa-file"></i>
+            <div class="info">
+                <h3 id="totalFiles">0</h3>
+                <p>Tổng file</p>
+            </div>
+        </div>
+        <div class="stat-card animate-in animate-in-delay-1">
+            <i class="fas fa-hdd"></i>
+            <div class="info">
+                <h3 id="totalSize">0 MB</h3>
+                <p>Dung lượng</p>
+            </div>
+        </div>
+        <div class="stat-card animate-in animate-in-delay-2">
+            <i class="fas fa-clock"></i>
+            <div class="info">
+                <h3 id="lastUpload">--</h3>
+                <p>Upload gần nhất</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="upload-area animate-in animate-in-delay-3">
+        <div class="left">
+            <i class="fas fa-upload"></i>
+            <div>
+                <p>Thêm file mới</p>
+                <small>Hỗ trợ mọi định dạng, tối đa 10MB</small>
+            </div>
+        </div>
+        <div class="file-input-wrapper">
+            <button class="btn-upload"><i class="fas fa-plus-circle"></i> Chọn file</button>
+            <input type="file" id="fileInput" multiple />
+        </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm file..." />
+        </div>
+        <div class="filter-btns">
+            <button class="active" data-filter="all">Tất cả</button>
+            <button data-filter="image">Hình ảnh</button>
+            <button data-filter="document">Tài liệu</button>
+            <button data-filter="other">Khác</button>
+        </div>
+    </div>
+
+    <!-- FILE GRID -->
+    <div class="file-grid" id="fileGrid">
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h3>Chưa có file nào</h3>
+            <p>Hãy tải lên file đầu tiên của bạn!</p>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER - THÔNG TIN NGƯỜI SỞ HỮU ===== -->
+<footer class="main-footer">
+    <div class="footer-content">
+        <!-- Phần thông tin người sở hữu (giữ nguyên) -->
+        <div class="footer-owner">
+            <div class="owner-avatar">
+                <img src="https://ui-avatars.com/api/?name=Le+Van+Ton+Nguyen&background=4f46e5&color=fff&size=128" alt="Owner" />
+            </div>
+            <div class="owner-info">
+                <span class="owner-label">👑 Người sở hữu</span>
+                <div class="owner-name">
+                    LeVan ToNguyen
+                    <span class="badge-owner">Owner</span>
+                </div>
+                <div class="owner-email">
+                    <i class="fas fa-envelope"></i>
+                    levantonguyen@gmail.com
+                    <button class="copy-email-btn" onclick="copyOwnerEmail()" title="Sao chép email">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần liên kết mạng xã hội (ĐÃ CẬP NHẬT) -->
+        <div class="footer-right">
+            <div class="footer-social">
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/@Qu%E1%BB%B7Thi%C3%AAnM%C3%B4n" target="_blank" rel="noopener noreferrer" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <!-- GitHub -->
+                <a href="https://github.com/levantonguyen-afk" target="_blank" rel="noopener noreferrer" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/nguyenlevanto?igsh=MTRnODYwbHhoc2RiZw==" target="_blank" rel="noopener noreferrer" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/1BUczH44Jm/" target="_blank" rel="noopener noreferrer" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+            </div>
+            <span class="footer-version">v2.0.1</span>
+        </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+        <div class="copyright">
+            <i class="fas fa-heart"></i> 2026 · Kho lưu trữ cá nhân · Mọi quyền được bảo lưu
+        </div>
+        <div class="footer-links">
+            <a href="#">Chính sách bảo mật</a>
+            <a href="#">Điều khoản sử dụng</a>
+            <a href="#">Liên hệ</a>
+        </div>
+    </div>
+</footer>
+
+<!-- MODAL LOGIN / REGISTER -->
+<div class="modal-overlay" id="authModal">
+    <div class="modal">
+        <button class="close-btn" id="closeModal">&times;</button>
+        <h2 id="modalTitle">Đăng nhập</h2>
+        <p class="sub" id="modalSub">Đăng nhập để quản lý file cá nhân</p>
+
+        <form id="authForm">
+            <div class="form-group" id="nameGroup" style="display:none;">
+                <label>Họ và tên</label>
+                <input type="text" id="regName" placeholder="Nguyễn Văn A" />
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="authEmail" placeholder="example@gmail.com" required />
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="authPassword" placeholder="••••••••" required minlength="6" />
+            </div>
+            <button type="submit" class="btn-submit" id="submitBtn">Đăng nhập</button>
+        </form>
+
+        <div class="divider">HOẶC</div>
+
+        <button class="google-btn" id="googleAuthBtn">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z'/%3E%3Cpath fill='%23FF3D00' d='M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z'/%3E%3Cpath fill='%234CAF50' d='M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z'/%3E%3Cpath fill='%231976D2' d='M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z'/%3E%3C/svg%3E" alt="Google" />
+            Tiếp tục với Google
+        </button>
+
+        <div class="switch-auth">
+            <span id="switchText">Chưa có tài khoản?</span>
+            <a id="switchLink">Đăng ký ngay</a>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage"></span>
+</div>
+
+<script>
+    (function() {
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let files = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let currentUser = null;
+        let isLoginMode = true;
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // DOM refs
+        const fileGrid = document.getElementById('fileGrid');
+        const fileInput = document.getElementById('fileInput');
+        const totalFilesEl = document.getElementById('totalFiles');
+        const totalSizeEl = document.getElementById('totalSize');
+        const lastUploadEl = document.getElementById('lastUpload');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btns button');
+        const userSection = document.getElementById('userSection');
+        const toastEl = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Modal
+        const modal = document.getElementById('authModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSub = document.getElementById('modalSub');
+        const submitBtn = document.getElementById('submitBtn');
+        const switchLink = document.getElementById('switchLink');
+        const switchText = document.getElementById('switchText');
+        const authForm = document.getElementById('authForm');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const regName = document.getElementById('regName');
+        const nameGroup = document.getElementById('nameGroup');
+        const googleBtn = document.getElementById('googleAuthBtn');
+
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+
+        // ============================================================
+        //  THEME
+        // ============================================================
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Sáng';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Tối';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+        });
+
+        applyTheme(currentTheme);
+
+        // ============================================================
+        //  TOAST
+        // ============================================================
+        let toastTimeout = null;
+        function showToast(msg, type = 'success') {
+            toastMessage.textContent = msg;
+            toastEl.className = 'toast ' + type;
+            const icon = toastEl.querySelector('i');
+            if (type === 'success') icon.className = 'fas fa-check-circle';
+            else if (type === 'error') icon.className = 'fas fa-exclamation-circle';
+            else icon.className = 'fas fa-info-circle';
+            toastEl.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 3000);
+        }
+
+        // ============================================================
+        //  GENERATE UNIQUE FILE LINK
+        // ============================================================
+        function generateFileLink(fileId) {
+            const user = getCurrentUser();
+            if (!user) return '#';
+            const userId = btoa(user.email).replace(/[^a-zA-Z0-9]/g, '');
+            return window.location.origin + window.location.pathname + '#/file/' + userId + '/' + fileId;
+        }
+
+        function getFileIdFromLink() {
+            const hash = window.location.hash;
+            const match = hash.match(/^#\/file\/([^\/]+)\/(.+)$/);
+            if (match) {
+                return { userId: match[1], fileId: match[2] };
+            }
+            return null;
+        }
+
+        function handleFileLink() {
+            const linkData = getFileIdFromLink();
+            if (linkData) {
+                const file = files.find(f => f.id === linkData.fileId);
+                if (file && file.dataURL && file.dataURL !== '#') {
+                    const a = document.createElement('a');
+                    a.href = file.dataURL;
+                    a.download = file.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast('📥 Đang tải file: ' + file.name, 'info');
+                    history.replaceState(null, '', window.location.pathname);
+                } else if (file) {
+                    showToast('⚠️ File này không có dữ liệu để tải', 'error');
+                } else {
+                    showToast('❌ Không tìm thấy file', 'error');
+                }
+            }
+        }
+
+        // ============================================================
+        //  COPY OWNER EMAIL
+        // ============================================================
+        window.copyOwnerEmail = async function() {
+            const email = 'levantonguyen@gmail.com';
+            try {
+                await navigator.clipboard.writeText(email);
+                showToast('📋 Đã sao chép email: ' + email, 'success');
+            } catch (err) {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = email;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('📋 Đã sao chép email: ' + email, 'success');
+            }
+        };
+
+        // ============================================================
+        //  USER MANAGEMENT
+        // ============================================================
+        function getUsers() {
+            try {
+                const data = localStorage.getItem('allUsers');
+                return data ? JSON.parse(data) : {};
+            } catch { return {}; }
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('allUsers', JSON.stringify(users));
+        }
+
+        function getCurrentUser() {
+            try {
+                const data = localStorage.getItem('currentUser');
+                return data ? JSON.parse(data) : null;
+            } catch { return null; }
+        }
+
+        function setCurrentUser(user) {
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+            } else {
+                localStorage.removeItem('currentUser');
+            }
+            currentUser = user;
+        }
+
+        function getUserFiles(email) {
+            try {
+                const data = localStorage.getItem('userFiles_' + email);
+                return data ? JSON.parse(data) : [];
+            } catch { return []; }
+        }
+
+        function saveUserFiles(email, filesData) {
+            localStorage.setItem('userFiles_' + email, JSON.stringify(filesData));
+        }
+
+        // ============================================================
+        //  RENDER USER SECTION
+        // ============================================================
+        function renderUserSection() {
+            const user = getCurrentUser();
+            if (user) {
+                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                userSection.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-detail">
+                            <div class="avatar">
+                                ${user.picture ? `<img src="${user.picture}" alt="avatar" />` : initial}
+                            </div>
+                            <div>
+                                <div class="user-name">${user.name || 'Người dùng'}</div>
+                                <div class="user-email">${user.email || ''}</div>
+                            </div>
+                        </div>
+                        <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Thoát</button>
+                    </div>
+                `;
+                document.getElementById('logoutBtn').addEventListener('click', function() {
+                    setCurrentUser(null);
+                    renderUserSection();
+                    loadFiles();
+                    render();
+                    showToast('Đã đăng xuất');
+                });
+                currentUser = user;
+                loadFiles();
+                render();
+            } else {
+                userSection.innerHTML = `
+                    <div class="auth-buttons">
+                        <button class="btn-login" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+                        <button class="btn-register" id="registerBtn"><i class="fas fa-user-plus"></i> Đăng ký</button>
+                    </div>
+                `;
+                document.getElementById('loginBtn').addEventListener('click', () => openModal(true));
+                document.getElementById('registerBtn').addEventListener('click', () => openModal(false));
+                currentUser = null;
+                files = [];
+                render();
+            }
+        }
+
+        // ============================================================
+        //  MODAL
+        // ============================================================
+        function openModal(isLogin) {
+            isLoginMode = isLogin;
+            modal.classList.add('active');
+
+            if (isLogin) {
+                modalTitle.textContent = 'Đăng nhập';
+                modalSub.textContent = 'Đăng nhập để quản lý file cá nhân';
+                submitBtn.textContent = 'Đăng nhập';
+                switchText.textContent = 'Chưa có tài khoản?';
+                switchLink.textContent = 'Đăng ký ngay';
+                nameGroup.style.display = 'none';
+                regName.removeAttribute('required');
+            } else {
+                modalTitle.textContent = 'Đăng ký tài khoản';
+                modalSub.textContent = 'Tạo tài khoản để lưu trữ file an toàn';
+                submitBtn.textContent = 'Đăng ký';
+                switchText.textContent = 'Đã có tài khoản?';
+                switchLink.textContent = 'Đăng nhập';
+                nameGroup.style.display = 'block';
+                regName.setAttribute('required', true);
+            }
+            authForm.reset();
+        }
+
+        function closeModalFn() {
+            modal.classList.remove('active');
+        }
+
+        switchLink.addEventListener('click', function() {
+            openModal(!isLoginMode);
+        });
+
+        closeModal.addEventListener('click', closeModalFn);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModalFn();
+        });
+        
+        // ============================================================
+        //  AUTH FORM
+        // ============================================================
+        authForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = authEmail.value.trim().toLowerCase();
+            const password = authPassword.value.trim();
+
+            if (!email || !password) {
+                showToast('Vui lòng điền đầy đủ thông tin', 'error');
+                return;
+            }
+
+            if (isLoginMode) {
+                const users = getUsers();
+                if (users[email] && users[email].password === password) {
+                    const userData = {
+                        name: users[email].name,
+                        email: email,
+                        picture: users[email].picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(users[email].name)}&background=4f46e5&color=fff&size=128`
+                    };
+                    setCurrentUser(userData);
+                    renderUserSection();
+                    closeModalFn();
+                    showToast('✅ Đăng nhập thành công! Chào ' + userData.name);
+                } else {
+                    showToast('❌ Email hoặc mật khẩu không đúng', 'error');
+                }
+            } else {
+                const name = regName.value.trim();
+                if (!name) {
+                    showToast('Vui lòng nhập họ và tên', 'error');
+                    return;
+                }
+                if (password.length < 6) {
+                    showToast('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                    return;
+                }
+
+                const users = getUsers();
+                if (users[email]) {
+                    showToast('❌ Email này đã được đăng ký', 'error');
+                    return;
+                }
+
+                users[email] = {
+                    name: name,
+                    password: password,
+                    picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=4f46e5&color=fff&size=128`,
+                    createdAt: new Date().toISOString()
+                };
+                saveUsers(users);
+
+                const userData = {
+                    name: name,
+                    email: email,
+                    picture: users[email].picture
+                };
+                setCurrentUser(userData);
+                renderUserSection();
+                closeModalFn();
+                showToast('✅ Đăng ký thành công! Chào ' + name);
+            }
+        });
+
+        // ============================================================
+        //  GOOGLE LOGIN (Mô phỏng)
+        // ============================================================
+        googleBtn.addEventListener('click', function() {
+            const fakeEmail = 'nguyenvana@gmail.com';
+            const fakeName = 'Nguyễn Văn A';
+            
+            const users = getUsers();
+            if (!users[fakeEmail]) {
+                users[fakeEmail] = {
+                    name: fakeName,
+                    password: 'google123',
+                    picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(fakeName)}&background=4f46e5&color=fff&size=128`,
+                    createdAt: new Date().toISOString()
+                };
+                saveUsers(users);
+            }
+
+            const userData = {
+                name: users[fakeEmail].name,
+                email: fakeEmail,
+                picture: users[fakeEmail].picture
+            };
+            setCurrentUser(userData);
+            renderUserSection();
+            closeModalFn();
+            showToast('✅ Đăng nhập Google thành công! Chào ' + userData.name);
+        });
+
+        // ============================================================
+        //  FILE MANAGEMENT
+        // ============================================================
+        function loadFiles() {
+            const user = getCurrentUser();
+            if (user) {
+                files = getUserFiles(user.email);
+            } else {
+                files = [];
+            }
+        }
+
+        function saveFiles() {
+            const user = getCurrentUser();
+            if (user) {
+                saveUserFiles(user.email, files);
+            }
+        }
+
+        // ============================================================
+        //  FILE UTILITIES
+        // ============================================================
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function getFileCategory(file) {
+            const type = file.type || '';
+            if (type.startsWith('image/')) return 'image';
+            if (type.startsWith('text/') || type.includes('pdf') || type.includes('word') || type.includes('document') || type.includes('sheet') || type.includes('presentation')) return 'document';
+            return 'other';
+        }
+
+        function getIconClass(file) {
+            const cat = getFileCategory(file);
+            if (cat === 'image') return 'fas fa-image';
+            if (cat === 'document') return 'fas fa-file-alt';
+            return 'fas fa-file';
+        }
+
+        // ============================================================
+        //  COPY TO CLIPBOARD
+        // ============================================================
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                return true;
+            }
+        }
+
+        // ============================================================
+        //  RENDER
+        // ============================================================
+        function render() {
+            let filtered = files;
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(f => getFileCategory(f) === currentFilter);
+            }
+            if (searchTerm.trim() !== '') {
+                const term = searchTerm.trim().toLowerCase();
+                filtered = filtered.filter(f => f.name.toLowerCase().includes(term));
+            }
+
+            totalFilesEl.textContent = files.length;
+            const totalBytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
+            totalSizeEl.textContent = formatSize(totalBytes);
+
+            if (files.length > 0) {
+                const sorted = [...files].sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+                const d = new Date(sorted[0].uploadDate);
+                lastUploadEl.textContent = d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN');
+            } else {
+                lastUploadEl.textContent = '--';
+            }
+
+            if (filtered.length === 0) {
+                fileGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>${files.length === 0 ? 'Chưa có file nào' : 'Không tìm thấy file'}</h3>
+                        <p>${files.length === 0 ? 'Hãy tải lên file đầu tiên của bạn!' : 'Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((file, index) => {
+                const icon = getIconClass(file);
+                const sizeStr = formatSize(file.size || 0);
+                const isImage = getFileCategory(file) === 'image';
+                const fileLink = generateFileLink(file.id);
+                const shortLink = fileLink.length > 40 ? fileLink.substring(0, 35) + '...' : fileLink;
+
+                html += `
+                    <div class="file-card" data-id="${file.id}" style="animation-delay: ${index * 0.05}s">
+                        <span class="file-id">#${file.id.substring(0, 8)}</span>
+                        <div class="icon">${isImage ? `<img src="${file.dataURL}" />` : `<i class="${icon}"></i>`}</div>
+                        <div class="file-name" title="${file.name}">${file.name}</div>
+                        <div class="file-size">${sizeStr}</div>
+                        <div class="file-link" onclick="window.copyFileLink('${file.id}')" title="Nhấn để sao chép link">
+                            <i class="fas fa-link"></i>
+                            <span>${shortLink}</span>
+                        </div>
+                        <div class="actions">
+                            <a href="${file.dataURL}" download="${file.name}" title="Tải xuống"><i class="fas fa-download"></i> Tải</a>
+                            <button class="copy-btn" data-id="${file.id}" title="Sao chép link"><i class="fas fa-copy"></i> Link</button>
+                            <button class="delete-btn" data-id="${file.id}" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            fileGrid.innerHTML = html;
+
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', async function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    const file = files.find(f => f.id === id);
+                    if (file) {
+                        const link = generateFileLink(id);
+                        const success = await copyToClipboard(link);
+                        if (success) {
+                            this.classList.add('copied');
+                            this.innerHTML = '<i class="fas fa-check"></i> Đã copy';
+                            showToast('📋 Đã sao chép link file vào clipboard!', 'success');
+                            setTimeout(() => {
+                                this.classList.remove('copied');
+                                this.innerHTML = '<i class="fas fa-copy"></i> Link';
+                            }, 2000);
+                        } else {
+                            showToast('❌ Không thể sao chép link', 'error');
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (confirm('Bạn có chắc muốn xóa file này?')) {
+                        files = files.filter(f => f.id !== id);
+                        saveFiles();
+                        render();
+                        showToast('Đã xóa file');
+                    }
+                });
+            });
+        }
+
+        window.copyFileLink = async function(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (file) {
+                const link = generateFileLink(fileId);
+                const success = await copyToClipboard(link);
+                if (success) {
+                    showToast('📋 Đã sao chép link file vào clipboard!', 'success');
+                } else {
+                    showToast('❌ Không thể sao chép link', 'error');
+                }
+            }
+        };
+
+        // ============================================================
+        //  ADD FILES
+        // ============================================================
+        function addFiles(fileList) {
+            const user = getCurrentUser();
+            if (!user) {
+                showToast('⚠️ Vui lòng đăng nhập để tải file lên', 'error');
+                return;
+            }
+
+            let added = 0;
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`File "${file.name}" vượt quá 10MB, bỏ qua.`, 'error');
+                    continue;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uniqueId = Date.now() + '-' + Math.random().toString(36).substr(2, 9) + '-' + file.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
+                    
+                    const newFile = {
+                        id: uniqueId,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        dataURL: e.target.result,
+                        uploadDate: new Date().toISOString()
+                    };
+                    files.push(newFile);
+                    added++;
+                    saveFiles();
+                    render();
+                };
+                reader.readAsDataURL(file);
+            }
+            if (added > 0) {
+                showToast(`✅ Đã thêm ${added} file`);
+            }
+            fileInput.value = '';
+        }
+
+        // ============================================================
+        //  EVENTS
+        // ============================================================
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                addFiles(this.files);
+            }
+            this.value = '';
+        });
+
+        searchInput.addEventListener('input', function() {
+            searchTerm = this.value;
+            render();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                render();
+            });
+        });
+
+        document.addEventListener('dragover', e => e.preventDefault());
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const dropped = e.dataTransfer.files;
+            if (dropped.length > 0) {
+                addFiles(dropped);
+            }
+        });
+
+        window.addEventListener('hashchange', handleFileLink);
+        window.addEventListener('load', function() {
+            setTimeout(handleFileLink, 500);
+        });
+
+        // ============================================================
+        //  SAMPLE FILES
+        // ============================================================
+        function initSampleFilesForUser(email) {
+            const existing = getUserFiles(email);
+            if (existing.length === 0) {
+                const samples = [
+                    {
+                        id: 'sample1-' + Date.now() + '-hosoca-nhan',
+                        name: 'Hồ sơ cá nhân.pdf',
+                        size: 245000,
+                        type: 'application/pdf',
+                        dataURL: '#',
+                        uploadDate: new Date(Date.now() - 86400000 * 2).toISOString()
+                    },
+                    {
+                        id: 'sample2-' + Date.now() + '-anhdaidien',
+                        name: 'ảnh đại diện.jpg',
+                        size: 89000,
+                        type: 'image/jpeg',
+                        dataURL: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%234f46e5\'/%3E%3Ctext x=\'20\' y=\'60\' fill=\'white\' font-size=\'28\' font-family=\'Arial\'%3E📸%3C/text%3E%3C/svg%3E',
+                        uploadDate: new Date(Date.now() - 86400000).toISOString()
+                    },
+                    {
+                        id: 'sample3-' + Date.now() + '-duan2026',
+                        name: 'dự án_2026.docx',
+                        size: 567000,
+                        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        dataURL: '#',
+                        uploadDate: new Date().toISOString()
+                    }
+                ];
+                saveUserFiles(email, samples);
+                return samples;
+            }
+            return existing;
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        const users = getUsers();
+        if (!users['levantonguyen@gmail.com']) {
+            users['levantonguyen@gmail.com'] = {
+                name: 'Lê Văn Tôn Nguyên',
+                password: '225346TN',
+                picture: 'https://ui-avatars.com/api/?name=Le+Van+Ton+Nguyen&background=4f46e5&color=fff&size=128',
+                createdAt: new Date().toISOString()
+            };
+            saveUsers(users);
+            const sampleFiles = [
+                {
+                    id: 'sample1-levantonguyen-hosoca-nhan',
+                    name: 'Hồ sơ cá nhân.pdf',
+                    size: 245000,
+                    type: 'application/pdf',
+                    dataURL: '#',
+                    uploadDate: new Date(Date.now() - 86400000 * 2).toISOString()
+                },
+                {
+                    id: 'sample2-levantonguyen-anhdaidien',
+                    name: 'ảnh đại diện.jpg',
+                    size: 89000,
+                    type: 'image/jpeg',
+                    dataURL: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%234f46e5\'/%3E%3Ctext x=\'20\' y=\'60\' fill=\'white\' font-size=\'28\' font-family=\'Arial\'%3E📸%3C/text%3E%3C/svg%3E',
+                    uploadDate: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: 'sample3-levantonguyen-duan2026',
+                    name: 'dự án_2026.docx',
+                    size: 567000,
+                    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    dataURL: '#',
+                    uploadDate: new Date().toISOString()
+                }
+            ];
+            saveUserFiles('levantonguyen@gmail.com', sampleFiles);
+        }
+
+        const savedUser = getCurrentUser();
+        if (savedUser) {
+            const allUsers = getUsers();
+            if (allUsers[savedUser.email]) {
+                const userData = allUsers[savedUser.email];
+                const current = {
+                    name: userData.name,
+                    email: savedUser.email,
+                    picture: userData.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=4f46e5&color=fff&size=128`
+                };
+                setCurrentUser(current);
+                files = getUserFiles(savedUser.email);
+                if (files.length === 0) {
+                    files = initSampleFilesForUser(savedUser.email);
+                }
+            } else {
+                setCurrentUser(null);
+                files = [];
+            }
+        } else {
+            files = [];
+        }
+
+        renderUserSection();
+        render();
+
+        console.log('💾 Kho lưu trữ cá nhân đã sẵn sàng!');
+        console.log('📧 Tài khoản mẫu: levantonguyen@gmail.com');
+        console.log('🔑 Mật khẩu: 225346TN');
+        console.log('👑 Người sở hữu: Lê Văn Tôn Nguyên');
+        console.log('📋 Mỗi file có link duy nhất: #/file/{userId}/{fileId}');
+        console.log('🌓 Nhấn nút mặt trời/trăng để đổi theme');
+    })();
+</script>
+</body>
+</html>
